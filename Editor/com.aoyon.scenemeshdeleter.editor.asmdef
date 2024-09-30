@@ -1,0 +1,20 @@
+{
+    "name": "com.aoyon.scenemeshdeleter.editor",
+    "rootNamespace": "",
+    "references": [
+        "nadena.dev.ndmf",
+        "com.aoyon.triangleselector",
+        "com.aoyon.scenemeshdeleter.runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
