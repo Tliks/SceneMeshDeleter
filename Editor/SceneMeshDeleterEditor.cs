@@ -13,6 +13,7 @@ namespace com.aoyon.scenemeshdeleter
         private SceneMeshDeleter _target;
         private RenderSelector _renderSelector;
         private SerializedProperty _triangleSelectionProperty;
+        
         private void OnEnable()
         {
             _target = target as SceneMeshDeleter;
