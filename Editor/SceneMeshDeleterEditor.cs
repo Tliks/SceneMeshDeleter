@@ -26,7 +26,11 @@ namespace com.aoyon.scenemeshdeleter
 
         private void OnDisable()
         {
-            _renderSelector.Dispose();
+            // Editorスクリプトの破棄ではなく、コンポーネントの無効化時に実行
+            if (_target == null)
+            {
+                _renderSelector.Dispose();
+            }
         }
 
         private void OnTriangleSelectionChanged(List<int> newSelection)
