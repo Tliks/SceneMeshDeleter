@@ -14,7 +14,7 @@ namespace com.aoyon.scenemeshdeleter
 
             foreach (var comonent in comonents)
             {
-                List<int> triangleSelection = comonent.triangleSelection;
+                var triangleSelection = comonent.triangleSelection;
 
                 if (triangleSelection == null || triangleSelection.Count == 0)
                 {
@@ -24,7 +24,7 @@ namespace com.aoyon.scenemeshdeleter
 
                 SkinnedMeshRenderer skinnedMeshRenderer = comonent.GetComponent<SkinnedMeshRenderer>();
 
-                Mesh newMesh = MeshHelper.DeleteMesh(skinnedMeshRenderer.sharedMesh, triangleSelection.ToHashSet());
+                Mesh newMesh = MeshHelper.DeleteMesh(skinnedMeshRenderer.sharedMesh, triangleSelection);
 
                 skinnedMeshRenderer.sharedMesh = newMesh;
 

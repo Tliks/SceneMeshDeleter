@@ -4,6 +4,7 @@ using UnityEditor;
 using nadena.dev.ndmf.preview;
 using com.aoyon.triangleselector;
 using com.aoyon.triangleselector.utils;
+using System.Linq;
 
 namespace com.aoyon.scenemeshdeleter
 {
@@ -17,7 +18,7 @@ namespace com.aoyon.scenemeshdeleter
             _target = target as SceneMeshDeleter;
             var skinnedMeshRenderer = _target.GetComponent<SkinnedMeshRenderer>();
             _renderSelector = CreateInstance<RenderSelector>();
-            _renderSelector.Initialize(skinnedMeshRenderer, _target.triangleSelection);
+            _renderSelector.Initialize(skinnedMeshRenderer, _target.triangleSelection.ToList());
             _renderSelector.RegisterApplyCallback(OnTriangleSelectionChanged);
         }
 
@@ -30,7 +31,7 @@ namespace com.aoyon.scenemeshdeleter
             }
         }
 
-        private void OnTriangleSelectionChanged(List<int> newSelection)
+        private void OnTriangleSelectionChanged(List<Vector3> newSelection)
         {
             // SerializedPropertyの書き換えが遅いので直接変更
             _target.triangleSelection = new HashSet<Vector3>(newSelection);
