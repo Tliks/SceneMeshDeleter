@@ -12,8 +12,6 @@ namespace com.aoyon.scenemeshdeleter
     {
         private SceneMeshDeleter _target;
         private RenderSelector _renderSelector;
-        private SerializedProperty _triangleSelectionProperty;
-        
         private void OnEnable()
         {
             _target = target as SceneMeshDeleter;
@@ -21,7 +19,6 @@ namespace com.aoyon.scenemeshdeleter
             _renderSelector = CreateInstance<RenderSelector>();
             _renderSelector.Initialize(skinnedMeshRenderer, _target.triangleSelection);
             _renderSelector.RegisterApplyCallback(OnTriangleSelectionChanged);
-            _triangleSelectionProperty = serializedObject.FindProperty(nameof(SceneMeshDeleter.triangleSelection));
         }
 
         private void OnDisable()
@@ -35,14 +32,10 @@ namespace com.aoyon.scenemeshdeleter
 
         private void OnTriangleSelectionChanged(List<int> newSelection)
         {
-            serializedObject.Update();
-            // SerializedPropertyの配列の書き換えが普通に遅い
-            _triangleSelectionProperty.arraySize = newSelection.Count;
-            for (int i = 0; i < newSelection.Count; i++)
-            {
-                _triangleSelectionProperty.GetArrayElementAtIndex(i).intValue = newSelection[i];
-            }
-            serializedObject.ApplyModifiedProperties();
+            // SerializedPropertyの書き換えが遅いので直接変更
+            _target.triangleSelection = new HashSet<Vector3>(newSelection);
+            // NDMFに明示的に通知
+            ChangeNotifier.NotifyObjectUpdate(_target);
         }
 
         public override void OnInspectorGUI()
