@@ -41,9 +41,7 @@ namespace com.aoyon.scenemeshdeleter
             var component = group.GetData<SceneMeshDeleter[]>().SingleOrDefault();
             if (component == default) return null;
 
-            // Func<T, R> extractで余計な更新を防ぎたいけど現在の実装だど発火していない
-            //context.Observe(component, component => component.triangleSelection);
-            context.Observe(component);
+            context.Observe(component, component => component.triangleSelection, (a, b) => a.SetEquals(b));
 
             var pair = proxyPairs.SingleOrDefault();
             if (pair == default) return null;
@@ -54,7 +52,17 @@ namespace com.aoyon.scenemeshdeleter
             Mesh mesh = proxy.sharedMesh;
             if (mesh == null) return null;
 
-            Mesh modifiedMesh = MeshHelper.DeleteMesh(mesh, component.triangleSelection.ToHashSet());
+            var triangleSelection = component.triangleSelection;
+            Mesh modifiedMesh;
+            if (triangleSelection.Count == 0) 
+            {
+                modifiedMesh = mesh;
+            }
+            else
+            {
+                modifiedMesh = MeshHelper.DeleteMesh(mesh, triangleSelection);
+            }
+
             return Task.FromResult<IRenderFilterNode>(new SceneMeshDeleterPreviewNode(modifiedMesh));
         }
     }
