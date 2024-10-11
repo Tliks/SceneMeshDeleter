@@ -25,6 +25,7 @@ namespace com.aoyon.scenemeshdeleter
         private void OnDisable()
         {
             // Editorスクリプトの破棄ではなく、コンポーネントの無効化時に実行
+            // 別のオブジェクトが選択された際に呼ばれてTriangle Selectorが閉じるのを防ぎたい
             if (_target == null)
             {
                 _renderSelector.Dispose();
