@@ -16,8 +16,7 @@ namespace com.aoyon.scenemeshdeleter
             var sequence =
                 InPhase(BuildPhase.Transforming)
                 .BeforePlugin("MantisLODEditor.ndmf")
-                .BeforePlugin("net.rs64.tex-trans-tool")
-                .BeforePlugin("com.anatawa12.avatar-optimizer");
+                .BeforePlugin("net.rs64.tex-trans-tool");
 
             sequence
             .Run(SceneMeshDeleterPass.Instance)
