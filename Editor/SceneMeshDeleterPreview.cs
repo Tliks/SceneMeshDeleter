@@ -29,19 +29,22 @@ namespace com.aoyon.scenemeshdeleter
 
         public ImmutableList<RenderGroup> GetTargetGroups(ComputeContext context)
         {
-            return context.GetComponentsByType<SceneMeshDeleter>()
-            .Select(component => (component, context.GetComponent<SkinnedMeshRenderer>(component.gameObject)))
-            .Where(pair => pair.Item2 != null && pair.Item2.sharedMesh != null)
-            .Select(pair => RenderGroup.For(pair.Item2).WithData(new[] { pair.Item1 }))
-            .ToImmutableList();
+            return context.GetComponentsByType<SkinnedMeshRenderer>()
+                .Select(renderer => (renderer, context.GetComponents<SceneMeshDeleter>(renderer.gameObject)))
+                .Where(pair => pair.Item2.Count() != 0)
+                .Select(pair => RenderGroup.For(pair.Item1).WithData(pair.Item2))
+                .ToImmutableList();
         }
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
-            var component = group.GetData<SceneMeshDeleter[]>().First();
+            var components = group.GetData<SceneMeshDeleter[]>();
 
-            // compareは高頻度で呼ばれるのでToHashSetは回避すべきかも？
-            var triangleSelection = context.Observe(component, component => component.triangleSelection, (a, b) => a.ToHashSet().SetEquals(b));
+            var triangleSelection = new HashSet<Vector3>();
+            foreach(var component in components){
+                context.Observe(component, component => component.triangleSelection, (a, b) => a.ToHashSet().SetEquals(b));
+                triangleSelection.UnionWith(component.triangleSelection);
+            }
 
             var pair = proxyPairs.First();
             var proxy = pair.Item2 as SkinnedMeshRenderer;

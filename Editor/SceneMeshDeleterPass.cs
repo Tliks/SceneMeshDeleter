@@ -10,25 +10,23 @@ namespace com.aoyon.scenemeshdeleter
     {
         protected override void Execute(BuildContext context)
         {
-            var comonents = context.AvatarRootObject.GetComponentsInChildren<SceneMeshDeleter>(true);
+            var renderers = context.AvatarRootObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
-            foreach (var comonent in comonents)
+            foreach (var renderer in renderers)
             {
-                var triangleSelection = comonent.triangleSelection;
+                var components = renderer.GetComponents<SceneMeshDeleter>();
+                if (components.Count() == 0) continue;
 
-                if (triangleSelection == null || triangleSelection.Count == 0)
+                var triangleSelection = new HashSet<Vector3>();
+                foreach(var component in components)
                 {
-                    Object.DestroyImmediate(comonent);
-                    return;
+                    triangleSelection.UnionWith(component.triangleSelection);
+                    Object.DestroyImmediate(component);
                 }
 
-                SkinnedMeshRenderer skinnedMeshRenderer = comonent.GetComponent<SkinnedMeshRenderer>();
+                Mesh newMesh = MeshHelper.DeleteMesh(renderer.sharedMesh, triangleSelection);
 
-                Mesh newMesh = MeshHelper.DeleteMesh(skinnedMeshRenderer.sharedMesh, triangleSelection);
-
-                skinnedMeshRenderer.sharedMesh = newMesh;
-
-                Object.DestroyImmediate(comonent);
+                renderer.sharedMesh = newMesh;
             }
         }
     }
