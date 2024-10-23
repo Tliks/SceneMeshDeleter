@@ -38,30 +38,15 @@ namespace com.aoyon.scenemeshdeleter
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
-            var component = group.GetData<SceneMeshDeleter[]>().SingleOrDefault();
-            if (component == default) return null;
+            var component = group.GetData<SceneMeshDeleter[]>().First();
 
-            context.Observe(component, component => component.triangleSelection, (a, b) => a.SetEquals(b));
+            // compareは高頻度で呼ばれるのでToHashSetは回避すべきかも？
+            var triangleSelection = context.Observe(component, component => component.triangleSelection, (a, b) => a.ToHashSet().SetEquals(b));
 
-            var pair = proxyPairs.SingleOrDefault();
-            if (pair == default) return null;
-
-            if (!(pair.Item1 is SkinnedMeshRenderer original)) return null;
-            if (!(pair.Item2 is SkinnedMeshRenderer proxy)) return null;
-
-            Mesh mesh = proxy.sharedMesh;
-            if (mesh == null) return null;
-
-            var triangleSelection = component.triangleSelection;
-            Mesh modifiedMesh;
-            if (triangleSelection.Count == 0) 
-            {
-                modifiedMesh = mesh;
-            }
-            else
-            {
-                modifiedMesh = MeshHelper.DeleteMesh(mesh, triangleSelection);
-            }
+            var pair = proxyPairs.First();
+            var proxy = pair.Item2 as SkinnedMeshRenderer;
+            
+            var modifiedMesh = MeshHelper.RemoveTriangles(proxy.sharedMesh, triangleSelection);
 
             return Task.FromResult<IRenderFilterNode>(new SceneMeshDeleterPreviewNode(modifiedMesh));
         }
