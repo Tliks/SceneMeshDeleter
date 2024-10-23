@@ -10,6 +10,6 @@ namespace com.aoyon.scenemeshdeleter
     public class SceneMeshDeleter: MonoBehaviour, IEditorOnly
     {
         [SerializeField]
-        public HashSet<Vector3> triangleSelection = new();
+        public List<Vector3> triangleSelection = new();
     }
 }
